@@ -1,0 +1,7 @@
+.TH SIMPLE_SHELL
+
+.SH NAME
+SIMPLE_SHELL - A simple UNIX command interpreter
+
+.SH AUTHOR
+Written by Arthur Urbano <9323@holbertonstudents.com> & Ilmi Veliu <9850@holbertonstudents.com>
