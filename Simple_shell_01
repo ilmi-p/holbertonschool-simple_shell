@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(void)
+{
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t nread;
+    pid_t pid;
+    int status;
+
+    while (1) {
+        // Affichage du prompt
+        printf("$ ");
+        fflush(stdout);
+
+        // Lecture de la commande
+        nread = getline(&line, &len, stdin);
+        if (nread == -1) { // Gérer Ctrl+D
+            printf("\n");
+            break;
+        }
+
+        // Supprimer le saut de ligne à la fin de la commande
+        line[strcspn(line, "\n")] = '\0';
+
+        // Créer un processus enfant pour exécuter la commande
+        pid = fork();
+        if (pid == -1) { // Échec du fork
+            perror("fork");
+            continue;
+        }
+
+        if (pid == 0) { // Processus enfant
+            char *argv[] = {line, NULL};
+            if (execve(line, argv, NULL) == -1) {
+                perror(line);
+                exit(EXIT_FAILURE);
+            }
+        } else { // Processus parent
+            wait(&status); // Attendre que l'enfant se termine
+        }
+    }
+
+    free(line);
+    return 0;
+}
