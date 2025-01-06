@@ -14,35 +14,35 @@ int main(void)
     int status;
 
     while (1) {
-        // Affichage du prompt
-        printf("$ ");
+        printf("#cisfun$ ");
         fflush(stdout);
 
-        // Lecture de la commande
         nread = getline(&line, &len, stdin);
-        if (nread == -1) { // Gérer Ctrl+D
+        if (nread == -1) {
             printf("\n");
             break;
         }
 
-        // Supprimer le saut de ligne à la fin de la commande
         line[strcspn(line, "\n")] = '\0';
 
-        // Créer un processus enfant pour exécuter la commande
+        if (strcmp(line, "exit") == 0) {
+            break;
+        }
+
         pid = fork();
-        if (pid == -1) { // Échec du fork
+        if (pid == -1) {
             perror("fork");
             continue;
         }
 
-        if (pid == 0) { // Processus enfant
+        if (pid == 0) {
             char *argv[] = {line, NULL};
             if (execve(line, argv, NULL) == -1) {
                 perror(line);
                 exit(EXIT_FAILURE);
             }
-        } else { // Processus parent
-            wait(&status); // Attendre que l'enfant se termine
+        } else {
+            wait(&status);
         }
     }
 
