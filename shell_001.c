@@ -1,109 +1,120 @@
 #include "shell.h"
 
 /**
- * _strcat - concatenates two string in a path form
- * @first: the first given destination
- * @second: the second given source
+ * _itoa - convert integer to array
+ * @n: the given number
  *
- * Return: (Success) to the newly string
- * ------- (Fail) if it failed
+ * Return: a pointer to the null terminated string
  */
-char *_strcat(char *first, char *second)
+char *_itoa(unsigned int n)
 {
-	int len1, len2, i = 0, j = 0;
-	char *result;
+	int len = 0, i = 0;
+	char *s;
 
-	len1 = _strlen(first);
-	len2 = _strlen(second);
-	result = malloc((len1 + len2 + 2) * sizeof(char));
-	if (!result)
+	len = intlen(n);
+	s = malloc(len + 1);
+	if (!s)
 		return (NULL);
-	*result = '\0';
-	while (first[j])
-		result[i++] = first[j++];
-	result[i++] = '/';
-	j = 0;
-	while (second[j])
-		result[i++] = second[j++];
-	result[i] = '\0';
-	return (result);
+	*s = '\0';
+	while (n / 10)
+	{
+		s[i] = (n % 10) + '0';
+		n /= 10;
+		i++;
+	}
+	s[i] = (n % 10) + '0';
+	array_rev(s, len);
+	s[i + 1] = '\0';
+	return (s);
 }
 /**
- * _strlen - finds the length of a given string
- * @str: the given string
+ * _atoi - converts character to integer
+ * @c: the given character
  *
- * Return: (Success) the length of the string
- * ------- (Fail) negative value
+ * Return: An integer
  */
-int _strlen(char *str)
+int _atoi(char *c)
 {
-	int len;
+	unsigned int val = 0;
+	int sign = 1;
 
-	for (len = 0; str[len]; len++)
-		;
+	if (c == NULL)
+		return (0);
+	while (*c)
+	{
+		if (*c == '-')
+			sign *= (-1);
+		else
+			val = (val * 10) + (*c - '0');
+		c++;
+	}
+	return (sign * val);
+}
+
+/**
+ * intlen - Determine the number of digit int integer
+ * @num: the given number
+ *
+ * Return: the length of the integer
+ */
+int intlen(int num)
+{
+	int len = 0;
+
+	while (num != 0)
+	{
+		len++;
+		num /= 10;
+	}
 	return (len);
 }
 /**
- * _strcmp - compare two strings
- * @s1: the first given string
- * @s2: the second given string
+ * print_error - prints error
+ * @data: the data structure pointer
  *
  * Return: (Success) a positive number
  * ------- (Fail) a negative number
  */
-int _strcmp(char *s1, char *s2)
+int print_error(sh_t *data)
 {
-	int cmp = 0, i;
+	char *idx = _itoa(data->index);
 
-	if (s1 == NULL || s2 == NULL)
-		return (1);
-	for (i = 0; s1[i]; i++)
+	PRINT("hsh: ");
+	PRINT(idx);
+	PRINT(": ");
+	PRINT(data->args[0]);
+	PRINT(": ");
+	PRINT(data->error_msg);
+	free(idx);
+	return (0);
+}
+
+/**
+ * write_history - prints error
+ * @data: the data structure pointer
+ *
+ * Return: (Success) a positive number
+ * ------- (Fail) a negative number
+ */
+int write_history(sh_t *data __attribute__((unused)))
+{
+	char *filename = "history";
+	char *line_of_history = "this is a line of history";
+	ssize_t fd, w;
+	int len;
+
+	if (!filename)
+		return (-1);
+	fd = open(filename, O_RDWR | O_APPEND);
+	if (fd < 0)
+		return (-1);
+	if (line_of_history)
 	{
-		if (s1[i] != s2[i])
-		{
-			cmp = s1[i] - s2[i];
-			break;
-		}
-		else
-			continue;
+		while (line_of_history[len])
+			len++;
+		w = write(fd, line_of_history, len);
+		if (w < 0)
+			return (-1);
 	}
-	return (cmp);
-}
-/**
- * _strchr - locates a character in a given string
- * @str: the given string
- * @c: the given string
- *
- * Return: (Success) a pointer to the first occurence of c
- * ------- (Fail) return a null pointer
- */
-char *_strchr(char *str, char c)
-{
-	char *ptr;
-
-	if (str == NULL)
-		return (NULL);
-	for (ptr = str; *ptr; ptr++)
-		if (*ptr == c)
-			return (ptr);
-	return (NULL);
-}
-/**
- * _strdup - dupicates string
- * @str: the given string
- *
- * Return: (Success) a pointer to the duplicated string
- * ------- (Fail) return a null pointer
- */
-char *_strdup(char *str)
-{
-	char *dupl;
-
-	if (str == NULL)
-		return (NULL);
-	dupl = malloc(_strlen(str) + 1);
-	if (dupl == NULL)
-		return (NULL);
-	_strcpy(dupl, str);
-	return (dupl);
+	return (1);
 }
