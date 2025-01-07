@@ -1,4 +1,4 @@
-# SIMPLE SHELL 
+# SIMPLE SHELL
 ## Plan
 #### 1 - Description
 #### 2 - Compilation
@@ -7,7 +7,7 @@
 #### 5 - Flowchart
 
 ## **Description**
-For this project we have to recreate a simple UNIX command interpreter, 
+For this project we have to recreate a simple UNIX command interpreter,
 
 We also have a man page at the root of the repo.
 ## **Compilation command**
