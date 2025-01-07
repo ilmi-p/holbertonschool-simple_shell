@@ -1,77 +1,137 @@
 #include "shell.h"
+int lsh_cd(char **args);
+int lsh_help(char **args);
+int lsh_exit(char **args);
+int lsh_ctrld(char **args);
 
- /* print_env - Imprime l'environnement actuel
- * @command_line : Ligne de commande (non utilisée)
- * @args : Arguments de commande (inutilisé)
- * @status : Statut de sortie (non utilisé)
+/*
+ * List of builtin commands, followed by their corresponding functions.
  */
-void print_env(char *command_line __attribute__((unused)),
-		char **args __attribute__((unused)), int status)
-{
-	int i = 0;
+char *builtin_str[] = {"cd", "help", "exit", "^D"};
 
-	(void)status;
-	while (environ[i])
+int (*builtin_func[]) (char **) = {&lsh_cd, &lsh_help, &lsh_exit, &lsh_ctrld};
+
+/**
+ * lsh_num_builtins - size
+ * Return: size
+ */
+
+int lsh_num_builtins(void)
+{
+	return (sizeof(builtin_str) / sizeof(char *));
+}
+
+/*
+ * Builtin function implementations.
+*/
+
+/**
+ * lsh_cd - builtin to change dirs
+ * @args: List of args.  args[0] is "cd".  args[1] is the directory.
+ * Return: 1 on success
+ */
+int lsh_cd(char **args)
+{
+	if (args[1] == NULL)
 	{
-		printf("%s\n", environ[i]);
-		i++;
+		fprintf(stderr, "hsh: expected argument to \"cd\"\n");
 	}
+	else
+	{
+		if (chdir(args[1]) != 0)
+		{
+			perror("hsh");
+		}
+	}
+	return (1);
 }
 
 /**
- * shell_exit - Quitte le shell avec le statut donné
- * @command_line: Ligne de commande à libérer
- * @args: Arguments de la commande
- * @status: Statut de sortie actuel
+ * lsh_help - prints the help for the shell
+ * @args: List of args.  Not examined.
+ * Return: Always returns 1, to continue executing.
  */
-
-void shell_exit(char *command_line, char **args, int status)
+int lsh_help(char **args)
 {
-	int exit_code = status;
+	int i;
 
-	if (args[1])
+	printf("Oscar Bedat and Andres Henderson\n");
+	printf("If you need help, call 1-800-help\n");
+	(void)args;
+	for (i = 0; i < lsh_num_builtins(); i++)
 	{
-		exit_code = atoi(args[1]);
-		if (exit_code < 0)
-		{
-			fprintf(stderr, "./hsh: exit: Illegal number: %s\n", args[1]);
-			exit_code = 2;
-		}
+		printf("  %s\n", builtin_str[i]);
 	}
 
-	clean_command_array(args);
-	free(command_line);
-	exit(exit_code);
+	return (1);
 }
+
 /**
- * execute_builtin - Exécute une commande interne si elle existe
- * @command_line: Ligne de commande originale
- * @args: Arguments de la commande
- * @status: Statut de sortie actuel
- * Retourne: 1 si la commande interne est exécutée, 0 sinon
+ * lsh_exit - builtin to exit the shell
+ * @args: List of args.  Not examined.
+ * Return: Always returns 0, to terminate execution.
+ */
+int lsh_exit(char **args)
+{
+	(void)args;
+	free(args);
+	return (200);
+}
+
+/**
+ * lsh_ctrld - builtin to handle "^D" call
+ * @args: List of args.  Not examined.
+ * Return: Always returns 0, to terminate execution.
+ */
+int lsh_ctrld(char **args)
+{
+	(void)args;
+	free(args);
+	return (200);
+}
+
+/**
+ *_fork_fun - foo that create a fork.
+ *@arg: Command and values path.
+ *@av: Has the name of our program.
+ *@env: Environment
+ *@lineptr: Command line for the user.
+ *@np: ID of proces.
+ *@c: Checker add new test
+ *Return: 0 success
  */
 
-int execute_builtin(char *command_line, char **args, int status)
+int _fork_fun(char **arg, char **av, char **env, char *lineptr, int np, int c)
 {
-	int i = 0;
-	builtin_t builtins[] = {
-		{"env", print_env},
-		{"exit", shell_exit},
-		{NULL, NULL}
-	};
 
-	if (!args || !args[0])
-		return (0);
+	pid_t child;
+	int status, i = 0;
+	char *format = "%s: %d: %s: not found\n";
 
-	while (builtins[i].name)
+	if (arg[0] == NULL)
+		return (1);
+	for (i = 0; i < lsh_num_builtins(); i++)
 	{
-		if (strcmp(args[0], builtins[i].name) == 0)
-		{
-			builtins[i].f(command_line, args, status);
-			return (1);
-		}
-		i++;
+		if (_strcmp(arg[0], builtin_str[i]) == 0)
+			return (builtin_func[i](arg));
 	}
-
+	child = fork();
+	if (child == 0)
+	{
+		if (execve(arg[0], arg, env) == -1)
+		{
+			fprintf(stderr, format, av[0], np, arg[0]);
+			if (!c)
+				free(arg[0]);
+			free(arg);
+			free(lineptr);
+			exit(errno);
+		}
+	}
+	else
+	{
+		wait(&status);
+		return (status);
+	}
 	return (0);
 }
