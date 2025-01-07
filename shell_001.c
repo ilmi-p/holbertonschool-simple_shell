@@ -1,120 +1,49 @@
-#include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 /**
- * _itoa - convert integer to array
- * @n: the given number
- *
- * Return: a pointer to the null terminated string
+ * main - Minimal UNIX shell
+ * @argc: Number of arguments (unused)
+ * @argv: Array of arguments
+ * Return: 0 on success, or exit status on failure
  */
-char *_itoa(unsigned int n)
+int main(int argc, char **argv)
 {
-	int len = 0, i = 0;
-	char *s;
+    char *command_line = NULL;
+    size_t bufsize = 0;
+    ssize_t nread;
+    char *args[2];
 
-	len = intlen(n);
-	s = malloc(len + 1);
-	if (!s)
-		return (NULL);
-	*s = '\0';
-	while (n / 10)
-	{
-		s[i] = (n % 10) + '0';
-		n /= 10;
-		i++;
-	}
-	s[i] = (n % 10) + '0';
-	array_rev(s, len);
-	s[i + 1] = '\0';
-	return (s);
-}
-/**
- * _atoi - converts character to integer
- * @c: the given character
- *
- * Return: An integer
- */
-int _atoi(char *c)
-{
-	unsigned int val = 0;
-	int sign = 1;
+    (void)argc;
 
-	if (c == NULL)
-		return (0);
-	while (*c)
-	{
-		if (*c == '-')
-			sign *= (-1);
-		else
-			val = (val * 10) + (*c - '0');
-		c++;
-	}
-	return (sign * val);
-}
+    while (1)
+    {
+        printf("#cisfun$ ");
+        fflush(stdout);
 
-/**
- * intlen - Determine the number of digit int integer
- * @num: the given number
- *
- * Return: the length of the integer
- */
-int intlen(int num)
-{
-	int len = 0;
+        nread = getline(&command_line, &bufsize, stdin);
+        if (nread == -1)
+        {
+            free(command_line);
+            putchar('\n');
+            exit(0);
+        }
 
-	while (num != 0)
-	{
-		len++;
-		num /= 10;
-	}
-	return (len);
-}
-/**
- * print_error - prints error
- * @data: the data structure pointer
- *
- * Return: (Success) a positive number
- * ------- (Fail) a negative number
- */
-int print_error(sh_t *data)
-{
-	char *idx = _itoa(data->index);
+        command_line[strcspn(command_line, "\n")] = '\0';
+        if (command_line[0] == '\0')
+            continue;
 
-	PRINT("hsh: ");
-	PRINT(idx);
-	PRINT(": ");
-	PRINT(data->args[0]);
-	PRINT(": ");
-	PRINT(data->error_msg);
-	free(idx);
-	return (0);
-}
+        args[0] = command_line;
+        args[1] = NULL;
 
-/**
- * write_history - prints error
- * @data: the data structure pointer
- *
- * Return: (Success) a positive number
- * ------- (Fail) a negative number
- */
-int write_history(sh_t *data __attribute__((unused)))
-{
-	char *filename = "history";
-	char *line_of_history = "this is a line of history";
-	ssize_t fd, w;
-	int len;
+        if (execve(args[0], args, NULL) == -1)
+        {
+            perror(argv[0]);
+        }
+    }
 
-	if (!filename)
-		return (-1);
-	fd = open(filename, O_RDWR | O_APPEND);
-	if (fd < 0)
-		return (-1);
-	if (line_of_history)
-	{
-		while (line_of_history[len])
-			len++;
-		w = write(fd, line_of_history, len);
-		if (w < 0)
-			return (-1);
-	}
-	return (1);
+    free(command_line);
+    return (0);
 }
