@@ -34,7 +34,7 @@ linux@arthur:~/holbertonschool-simple_shell$ ./shell
 #cisfun$ /bin/ls
 AUTHORS README.md exercise man_1_simple_shell shell shell.h simple_shell_01.c
 #cisfun$ ^C
-linux@arthur:~/holbertonschool-simple_shell$ ./shell
+linux@arthur:~/holbertonschool-simple_shell$
 ```
 
 ## **Flowchart**
