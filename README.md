@@ -27,6 +27,8 @@ $ gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 
 ## **Examples**
 
+In this example there is a very simple implementation of the ls command :
+
 ```c
 linux@arthur:~/holbertonschool-simple_shell$ ./shell
 #cisfun$ /bin/ls
