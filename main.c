@@ -1,7 +1,7 @@
 #include "shell.h"
 /**
- * main - shell program initializes to enters and read command from the user
- * Return: Always 0
+ * main - little shell program
+ * Return: 0
  */
 int main(void)
 {
@@ -12,11 +12,12 @@ int main(void)
 	{
 		if (isatty(STDIN_FILENO)) /* check for interactive mode */
 			prompt(); /* display it if yes */
-		if (getline(&stock, &buffer_size, stdin) == -1)  /* Read the user input using getline */
+		/* Read the user input using getline */
+		if (getline(&stock, &buffer_size, stdin) == -1)
 			break;
 		if (strlen(stock) > 0) /* check if it's not empty */
 		{
-			if (user_command(stock) == -1) /* use the user_command function to process */
+			if (user_command(stock) == -1) /* use the user_command function to process*/
 				fprintf(stderr, "error command: %s\n", stock);
 		}
 	}

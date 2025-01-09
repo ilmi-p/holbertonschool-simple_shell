@@ -13,5 +13,6 @@
 
 int prompt(void);
 int user_command(char *command);
+extern char **environ;
 
 #endif
