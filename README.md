@@ -45,6 +45,6 @@ linux@arthur:~/holbertonschool-simple_shell$
 ```
 
 ## **Flowchart**
-
+![simple_shell_flowchart](https://github.com/user-attachments/assets/92aa6ecb-30a6-4bad-b59d-769807ebca0d)
 #### *Authors*
 Ilmi Veliu - Arthur Urbano
