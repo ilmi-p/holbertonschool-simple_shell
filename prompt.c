@@ -1,10 +1,10 @@
 #include "shell.h"
 /**
- * prompt _ display the prompt
+ * prompt - display the prompt
  * Return: 0
  */
 int prompt(void)
 {
-	printf("#cisfun$");
+	printf("#cisfun$ ");
 	return (0);
 }
