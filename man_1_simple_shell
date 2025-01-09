@@ -3,5 +3,22 @@
 .SH NAME
 SIMPLE_SHELL - A simple UNIX command interpreter
 
+.SH COMMANDS
+
+- ls
+- Display all the directory and files in the current directory.
+
+- ^D (exit code)
+- Exit the shell with the exit code "^D".
+
+.SH Modes
+ The shell can be used in two different modes, the intercative one and the non-interactive one.
+
+.TP Interactive mode
+    The shell display a "$" and wait for commandn when the command is done the shell restart the process.
+
+.TP Non-interactive mode
+    The shell display only the result of the command without a prompt (Ex : echo "/bin/ls" | ./hsh)
+
 .SH AUTHOR
 Written by Arthur Urbano <9323@holbertonstudents.com> & Ilmi Veliu <9850@holbertonstudents.com>
