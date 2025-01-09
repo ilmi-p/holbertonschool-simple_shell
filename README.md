@@ -36,6 +36,13 @@ AUTHORS README.md exercise man_1_simple_shell shell shell.h simple_shell_01.c
 #cisfun$ ^C
 linux@arthur:~/holbertonschool-simple_shell$
 ```
+Here is an example of the non-interactive mode :
+
+```c
+linux@arthur:~/holbertonschool-simple_shell$ echo "/bin/ls" | ./hsh
+AUTHORS README.md exercise man_1_simple_shell shell shell.h simple_shell_01.c
+linux@arthur:~/holbertonschool-simple_shell$
+```
 
 ## **Flowchart**
 
